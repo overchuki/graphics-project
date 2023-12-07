@@ -15,7 +15,6 @@
  *  SPACE       jump in first person mode
  *  SHIFT       sprint in first person mode
  *  p           pause/resume lighting motion
- *  l           toggle lighting on/off
  *  k/K         slow light cycle / speed up light cycle
  *  ./>         zoom in in perspective/orthogonal view
  *  ,/<         zoom out in perspective/orthogonal view
@@ -34,7 +33,9 @@ double asp = 0;             // aspect ratio of window
 double dim = DEFAULT_DIM;   // dimensions of window
 int fov = FOV_NORMAL;       // fov
 int fullScreen = 0;         // full screen default to 0
+int debugMode = 0;          // allow changing of the scene
 int shader = 0;             // store compiled shader
+int simpleShader = 0;       // shader with no lighting
 
 // Window Globals
 int windowWidth = DEFAULT_WINDOW_WIDTH;
@@ -70,6 +71,7 @@ unsigned int globalWeaponTexture[N_WEAPON_TEXTURES];
 
 // Light
 double lightIntensity = 1;
+int flashLightOn = 0;
 
 // Display List
 int displayList;
@@ -122,30 +124,38 @@ void display() {
                     fpUp[0], fpUp[1], fpUp[2]);
     }
 
-    // draw before enabling lighting
-    drawSky(lightIntensity);
-
     // Lighting
-    lightingDisplay(lightIntensity);
+    lightingDisplay(fpPosVec, fpViewVector, fpPosVec[1]+jumpHeightGlobal+elevationGlobal);
 
     // Textures
     glEnable(GL_TEXTURE_2D);
     glTexEnvi(GL_TEXTURE_ENV , GL_TEXTURE_ENV_MODE , GL_MODULATE);
 
-    // Use Custom Shader
+    // Use Custom Shader for main lighting
     glUseProgram(shader);
+    int shaderId = glGetUniformLocation(shader,"OuterFlashlightCone");
+    glUniform1f(shaderId, FLASHLIGHT_OUTER_CUTOFF);
+    shaderId = glGetUniformLocation(shader,"FlashLightOn");
+    glUniform1f(shaderId, (float)flashLightOn);
 
     // Draw scene
     glCallList(displayList);
     drawHelicopters();
+    drawEnemies();
     // draw weapon last for the different projections if in first person
     if (mode == 2) {
-        weaponDisplay(asp);
+        switchProjectionAndDrawWeapon(FOV_NORMAL, asp);
     }
 
     // Lighting/textures stop after objects drawn
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_LIGHTING);
+
+    // Use alternate shader to draw sky, bullets, text, and HUD
+    glUseProgram(simpleShader);
+    drawSky(lightIntensity);
+    drawBullets();
+    switchProjectionAndDrawHUD(asp);
 
     // track FPS
     frames++;
@@ -219,11 +229,11 @@ void key(unsigned char ch,int x,int y) {
         exit(0);
     }
     // Reset view angle
-    else if (ch == '0') {
+    else if (debugMode == 1 && ch == '0') {
         th = ph = 0;
     }
     // toggle axes
-    else if (ch == 'x' || ch == 'X') {
+    else if (debugMode == 1 && (ch == 'x' || ch == 'X')) {
         if (showAxes == 1) {
             showAxes = 0;
         } else {
@@ -231,7 +241,7 @@ void key(unsigned char ch,int x,int y) {
         }
     }
     // cycle through view modes
-    else if (ch == 'm') {
+    else if (debugMode == 1 && (ch == 'm')) {
         mode += 1;
         if (mode > 2) {
             mode = 1;
@@ -262,20 +272,24 @@ void key(unsigned char ch,int x,int y) {
     else if(ch == ' ' && mode == 2) {
         jumpKey(1);
     }
-    // toggle lighting
-    else if(ch == 'l') {
-        lightingToggle();
+    // toggle flashlight
+    else if(ch == 'f' || ch == 'F') {
+        if (flashLightOn) {
+            flashLightOn = 0;
+        } else {
+            flashLightOn = 1.0;
+        }
     }
     // slow down lighting cycle
-    else if(ch == 'k') {
+    else if(debugMode == 1 && (ch == 'k')) {
         changeLightSpeed(-SUN_SPEED_STEP);
     }
     // speed up lighting cycle
-    else if(ch == 'K') {
+    else if(debugMode == 1 && (ch == 'K')) {
         changeLightSpeed(SUN_SPEED_STEP);
     }
     // pause/resume lighting cycle
-    else if(ch == 'p') {
+    else if(debugMode == 1 && (ch == 'p')) {
         lightingPause();
     }
     // zoom out on "<"
@@ -283,7 +297,7 @@ void key(unsigned char ch,int x,int y) {
         dim += 0.1;
     }
     // zoom in on ">"
-    else if((ch == '.' || ch == '>') && dim > 0.1) {
+    else if(debugMode == 1 && ((ch == '.' || ch == '>') && dim > 0.1)) {
         dim -= 0.1;
     }
 
@@ -492,6 +506,10 @@ void checkArgs(int argc, char* argv[]) {
         if (!strncmp("-f", argv[i], 2)) {
             fullScreen = 1;
         }
+        // Check for debug flag -d
+        if (!strncmp("-d", argv[i], 2)) {
+            debugMode = 1;
+        }
     }
 }
 
@@ -555,7 +573,8 @@ int main(int argc, char* argv[]) {
     initGlobals();
 
     // Compile Shader
-    shader = CreateShaderProg("shader/pixtex.vert", "shader/pixtex.frag");
+    shader = CreateShaderProg("shader/light.vert", "shader/light.frag");
+    simpleShader = CreateShaderProg("shader/simple.vert", "shader/simple.frag");;
     
     // Pass control to GLUT so it can interact with the user
     glutMainLoop();

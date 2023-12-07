@@ -79,6 +79,13 @@
 #define AMBIENT_RANGE 40.0
 #define DIFFUSE_FLOOR 0
 #define DIFFUSE_RANGE 35.0
+#define FLASHLIGHT_CUTOFF Cos(10.0)
+#define FLASHLIGHT_OUTER_CUTOFF Cos(20.0)
+#define FLASHLIGHT_EXP 1.0
+#define FLASHLIGHT_CONSTANT_ATTENUATION 1.0
+#define FLASHLIGHT_LINEAR_ATTENUATION 0.7
+#define FLASHLIGHT_QUADRATIC_ATTENUATION 1.8
+#define SKY_LIGHT_FLOOR 0.05
 
 // WEAPON GLOBALS
 #define N_ENEMIES 15
@@ -97,6 +104,24 @@
 #define WEAPON_FIRE_OFFSET_X 0.04
 #define WEAPON_FIRE_OFFSET_Y -0.01
 #define BULLET_REPEAT 2
+#define weaponOffsetX 0.02
+#define weaponOffsetY -CAMERA_HEIGHT / 5
+#define weaponOffsetZ -0.02
+#define weaponHeight 0.1
+#define weaponLen 0.7
+#define weaponWidth 0.05
+#define barrelRadius weaponWidth / 3
+#define barrelLen 0.3
+#define barrelStep 30
+#define gripWidth weaponWidth / 1.5
+#define gripHeight weaponHeight * 2
+#define gripLength weaponLen / 7
+#define gripZOffset weaponLen / 1.5
+#define gripXOffset (weaponWidth-gripWidth) / 2.0
+
+// MIN/MAX functions
+#define igormax(a,b) (((a) > (b)) ? (a) : (b))
+#define igormin(a,b) (((a) < (b)) ? (a) : (b))
 
 #ifdef __cplusplus
 extern "C" {
@@ -266,19 +291,14 @@ void calcFPAngle(double fpPosVec[3], double fpGroundDir[2], double fpViewVector[
 
 // LIGHTING FUNCTIONS
 void lightingIdle(double dt, double *lightIntensity);
-void lightingDisplay(double lightIntensity);
-void lightingToggle();
+void lightingDisplay(double fpPosVec[3], double fpViewVector[3], double h);
 void lightingPause();
 void changeLightSpeed(int speedUp);
 void sunVertex(double th,double ph);
 void drawSun(double x,double y,double z,double r);
 
-// TODO: tmp
-
-
 // WEAPON FUNCTIONS
 void weaponIdle(double t, double dt, double fpPosVec[3], double h);
-void weaponDisplay(double asp);
 void weaponLeftMouseDown();
 void weaponLeftMouseUp();
 void drawBullets();

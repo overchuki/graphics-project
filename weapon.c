@@ -23,20 +23,20 @@ int leftMouseDown = 0;
 double lastEnemyCheckTime = 0.0;
 
 // weapon data
-#define weaponOffsetX 0.02
-#define weaponOffsetY -CAMERA_HEIGHT / 5
-#define weaponOffsetZ -0.02
-#define weaponHeight 0.1
-#define weaponLen 0.7
-#define weaponWidth 0.05
-#define barrelRadius weaponWidth / 3
-#define barrelLen 0.3
-#define barrelStep 30
-#define gripWidth weaponWidth / 1.5
-#define gripHeight weaponHeight * 2
-#define gripLength weaponLen / 7
-#define gripZOffset weaponLen / 1.5
-#define gripXOffset (weaponWidth-gripWidth) / 2.0
+// #define weaponOffsetX 0.02
+// #define weaponOffsetY -CAMERA_HEIGHT / 5
+// #define weaponOffsetZ -0.02
+// #define weaponHeight 0.1
+// #define weaponLen 0.7
+// #define weaponWidth 0.05
+// #define barrelRadius weaponWidth / 3
+// #define barrelLen 0.3
+// #define barrelStep 30
+// #define gripWidth weaponWidth / 1.5
+// #define gripHeight weaponHeight * 2
+// #define gripLength weaponLen / 7
+// #define gripZOffset weaponLen / 1.5
+// #define gripXOffset (weaponWidth-gripWidth) / 2.0
 double bulletStart[3] = {(weaponWidth/2)*WEAPON_SCALE + weaponOffsetX, (weaponHeight/1.5)*WEAPON_SCALE + weaponOffsetY, (-barrelLen-weaponLen)*WEAPON_SCALE + weaponOffsetZ};
 double bulletDirLocal[3] = {WEAPON_FIRE_OFFSET_X,WEAPON_FIRE_OFFSET_Y,BULLET_SPEED};
 
@@ -85,26 +85,6 @@ void weaponIdle(double t, double dt, double fpPosVec[3], double h) {
     }
 }
 
-void weaponDisplay(double asp) {
-    // draw elements
-    drawBullets();
-    drawEnemies();
-
-    // draw weapon, has different projection matrix
-    switchProjectionAndDrawWeapon(FOV_NORMAL, asp);
-
-    // do not do depth test or lighting on the HUD
-    glDepthMask(GL_FALSE);
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_LIGHTING);
-
-    // draw the hud at the end
-    switchProjectionAndDrawHUD(asp);
-
-    // re-enable depth mask after done drawing HUD
-    glDepthMask(GL_TRUE);
-}
-
 // draw all active bullets
 void drawBullets() {
     for (int i = 0; i < MAX_BULLETS; i++) {
@@ -120,7 +100,6 @@ void drawBullet(struct bullet b) {
     float black[]  = {0.0,0.0,0.0,1.0};
     float white[]  = {1.0,1.0,1.0,1.0};
     glColor3d(1,1,0);
-    glBindTexture(GL_TEXTURE_2D, 0);
     glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,black);
     glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,white);
     glMaterialf(GL_FRONT_AND_BACK,GL_SHININESS,1);
@@ -257,7 +236,6 @@ void drawHUD() {
     double hitmarkWidth = 0.05;
     
     glColor3d(1,1,1);
-    glBindTexture(GL_TEXTURE_2D, 0);
     glPointSize(4);
     glLineWidth(1);
 
@@ -308,6 +286,11 @@ void switchProjectionAndDrawWeapon(double fov, double asp) {
 
 // similar to above, but ortho projection instead, also clearing depth buffer to avoid depth checking
 void switchProjectionAndDrawHUD(double asp) {
+    // do not do depth test or lighting on the HUD
+    glDepthMask(GL_FALSE);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
+
     //  Save transform attributes (Matrix Mode and Enabled Modes)
     glPushAttrib(GL_TRANSFORM_BIT|GL_ENABLE_BIT);
     //  Save projection matrix and set unit transform
@@ -333,6 +316,10 @@ void switchProjectionAndDrawHUD(double asp) {
     glPopMatrix();
     //  Pop transform attributes (Matrix Mode and Enabled Modes)
     glPopAttrib();
+
+    // re-enable depth mask after done drawing HUD
+    glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_TRUE);
 }
 
 // draw all enemies that are up

@@ -18,7 +18,7 @@ unsigned int *groundTexture;
 struct road roads[N_ROADS] = {
     {-WORLD_RADIUS, -WORLD_WALK_RADIUS+TOWN_OFFSET+2.5, -WORLD_WALK_RADIUS+TOWN_OFFSET+0.5, -WORLD_WALK_RADIUS+TOWN_OFFSET+0.8},
     {-WORLD_WALK_RADIUS+TOWN_OFFSET+2.8, WORLD_RADIUS, -WORLD_WALK_RADIUS+TOWN_OFFSET+0.5, -WORLD_WALK_RADIUS+TOWN_OFFSET+0.8},
-    {-WORLD_WALK_RADIUS+TOWN_OFFSET+2.5, -WORLD_WALK_RADIUS+TOWN_OFFSET+2.8, WORLD_RADIUS, -WORLD_RADIUS},
+    {-WORLD_WALK_RADIUS+TOWN_OFFSET+2.5, -WORLD_WALK_RADIUS+TOWN_OFFSET+2.8, -WORLD_RADIUS, WORLD_RADIUS},
     {-WORLD_WALK_RADIUS+TOWN_OFFSET+1.5, -WORLD_WALK_RADIUS+TOWN_OFFSET+2.5, -WORLD_WALK_RADIUS+TOWN_OFFSET+2.3, -WORLD_WALK_RADIUS+TOWN_OFFSET+2.6},
     {-WORLD_WALK_RADIUS+TOWN_OFFSET+2.8, WORLD_WALK_RADIUS-2.5, WORLD_WALK_RADIUS-3.0, WORLD_WALK_RADIUS-2.7}
 };
@@ -160,15 +160,23 @@ void drawGround() {
     glBindTexture(GL_TEXTURE_2D, groundTexture[0]);
     glBegin(GL_QUADS);
     glNormal3d(0,1,0);
-    double roadRepeatX, roadRepeatZ;
-    // Draw each road as a quad based on its bounds, with appropriate repeats
+    int roadRepeatX, roadRepeatZ;
+    double l,r,b,t;
     for(int i = 0; i < N_ROADS; i++) {
-        roadRepeatX = (roads[i].right - roads[i].left) / ROAD_REPEAT_DIST;
-        roadRepeatZ = ((roads[i].top - roads[i].bottom) / ROAD_REPEAT_DIST) * 2;
-        glTexCoord2d(0,0);                      glVertex3d(roads[i].left,  0, roads[i].bottom);
-        glTexCoord2d(0,roadRepeatZ);            glVertex3d(roads[i].left,  0, roads[i].top);
-        glTexCoord2d(roadRepeatX,roadRepeatZ);  glVertex3d(roads[i].right, 0, roads[i].top);
-        glTexCoord2d(roadRepeatX,0);            glVertex3d(roads[i].right, 0, roads[i].bottom);
+        roadRepeatX = ceil((roads[i].right - roads[i].left) / ROAD_REPEAT_DIST);
+        roadRepeatZ = ceil(((roads[i].bottom - roads[i].top) / ROAD_REPEAT_DIST));
+        for(int x = 0; x < roadRepeatX; x++) {
+            for(int z = 0; z < roadRepeatZ; z++) {
+                l = roads[i].left + (ROAD_REPEAT_DIST * x);
+                r = igormin(roads[i].right, roads[i].left + (ROAD_REPEAT_DIST * (x+1)));
+                t = roads[i].top + (ROAD_REPEAT_DIST * z);
+                b = igormin(roads[i].bottom, roads[i].top + (ROAD_REPEAT_DIST * (z+1)));
+                glTexCoord2d(0,0); glVertex3d(l, 0, b);
+                glTexCoord2d(0,2); glVertex3d(l, 0, t);
+                glTexCoord2d(1,2); glVertex3d(r, 0, t);
+                glTexCoord2d(1,0); glVertex3d(r, 0, b);
+            }
+        }
     }
     glEnd();
 
@@ -194,16 +202,7 @@ void drawSky(double lightIntensity) {
     // Save transformation
     glPushMatrix();
 
-    // light basics
-    float white[] = {lightIntensity,lightIntensity,lightIntensity,1};
-    float black[] = {0,0,0,1};
-    glMaterialf(GL_FRONT,GL_SHININESS,1);
-    glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,black);
-    glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,black);
-    glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,black);
-
-    // background color white
-    lightIntensity = (lightIntensity + 2) / 3;  // boost light because texture gets way too dark
+    // background color white with adjusted intensity
     glColor3d(lightIntensity,lightIntensity,lightIntensity);
 
     // sky surroundings drawn as a dome, overlaying a spherical sky texture as if it was a basic rectangle

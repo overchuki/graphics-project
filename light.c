@@ -13,7 +13,7 @@ double lightingSpeed = DEFAULT_SUN_SPEED;
 double lightingRadius = WORLD_RADIUS - (2*SUN_RADIUS);
 
 int sunMove = 1;    // Sun is moving
-int light = 1;      // Lighting
+// int light = 1;      // Lighting
 int local = 0;      // Local Viewer Model
 int emission = 100; // Emission intensity (%)
 int ambient = AMBIENT_FLOOR;   // Ambient intensity (%)
@@ -21,9 +21,6 @@ int diffuse = DIFFUSE_FLOOR;   // Diffuse intensity (%)
 int specular = 0;   // Specular intensity (%)
 int shininess = 0;  // Shininess (power of two)
 int shiny = 1;      // Shiny sun
-
-// TODO: tmp
-
 
 // Track light strength and sun position
 double sunPosition, lightStrength;
@@ -39,12 +36,12 @@ void lightingIdle(double dt, double *lightIntensity) {
         if (lightStrength < 0.01) {
             nightFactor = 2;
             lightStrength = 0;
-            *lightIntensity = 0.5;
+            *lightIntensity = SKY_LIGHT_FLOOR;
             ambient = AMBIENT_FLOOR;
         } else {
             // use a logarithmic function to determine strength so most of the day is bright and darkness only comes in/out at sunset/sunrise
             lightStrength = (log10(lightStrength)+2) / 2;
-            *lightIntensity = (lightStrength + 0.5) / 1.5;
+            *lightIntensity = (lightStrength + SKY_LIGHT_FLOOR) / (1.0 + SKY_LIGHT_FLOOR);
             ambient = AMBIENT_FLOOR + (lightStrength*AMBIENT_RANGE);
         }
 
@@ -62,51 +59,60 @@ void lightingIdle(double dt, double *lightIntensity) {
 }
 
 // This is largely taken from ex13, with a few small tweaks
-void lightingDisplay(double lightIntensity) {
+void lightingDisplay(double fpPosVec[3], double fpViewVector[3], double h) {
     // Smooth shading
     glShadeModel(GL_SMOOTH);
 
-    // Light switch
-    if (light) {
-        // Translate intensity to color vectors
-        float Ambient[] = {0.01*ambient ,0.01*ambient ,0.01*ambient ,1.0};
-        float Diffuse[] = {0.01*diffuse ,0.01*diffuse ,0.01*diffuse ,1.0};
-        float Specular[] = {0.01*specular,0.01*specular,0.01*specular,1.0};
-        
-        // Light position
-        float Position[] = {lightingRadius*Cos(lightingTh), lightingRadius*Sin(lightingTh), 0};
-        
-        // Draw light position as the sun
-        drawSun(Position[0], Position[1], Position[2], SUN_RADIUS);
-        
-        // OpenGL should normalize normal vectors
-        glEnable(GL_NORMALIZE);
-        
-        // Enable lighting
-        glEnable(GL_LIGHTING);
-        
-        // Location of viewer for specular calculations
-        glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER,local);
-        
-        // glColor sets ambient and diffuse color materials
-        glColorMaterial(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE);
-        glEnable(GL_COLOR_MATERIAL);
-        
-        // Enable light 0
-        glEnable(GL_LIGHT0);
-        
-        // Set ambient, diffuse, specular components and position of light 0
-        glLightfv(GL_LIGHT0,GL_AMBIENT, Ambient);
-        glLightfv(GL_LIGHT0,GL_DIFFUSE, Diffuse);
-        glLightfv(GL_LIGHT0,GL_SPECULAR,Specular);
-        glLightfv(GL_LIGHT0,GL_POSITION,Position);
-    } else {
-        glDisable(GL_LIGHTING);
-    }
-}
+    // Translate intensity to color vectors
+    float Ambient[] = {0.01*ambient ,0.01*ambient ,0.01*ambient ,1.0};
+    float Diffuse[] = {0.01*diffuse ,0.01*diffuse ,0.01*diffuse ,1.0};
+    float Specular[] = {0.01*specular,0.01*specular,0.01*specular,1.0};
+    
+    // Light position
+    float Position[] = {lightingRadius*Cos(lightingTh), lightingRadius*Sin(lightingTh), 0};
 
-void lightingToggle() {
-    light = !light;
+    // Flashlight position
+    // float FlashlightPosition[] = {(float)fpPosVec[0], (float)h, (float)fpPosVec[2]};
+    float FlashlightDirection[] = {(float)fpViewVector[0], (float)fpViewVector[1], (float)fpViewVector[2]};
+    float FlashlightDiffuse[] = {1.0 ,1.0 ,1.0 ,1.0};
+    
+    // Draw light position as the sun
+    drawSun(Position[0], Position[1], Position[2], SUN_RADIUS);
+    
+    // OpenGL should normalize normal vectors
+    glEnable(GL_NORMALIZE);
+    
+    // Enable lighting
+    glEnable(GL_LIGHTING);
+    
+    // Location of viewer for specular calculations
+    glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER,local);
+    
+    // glColor sets ambient and diffuse color materials
+    glColorMaterial(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE);
+    glEnable(GL_COLOR_MATERIAL);
+    
+    // Enable light 0, 1, 2, 3, 4
+    glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHT1);
+    
+    // Set ambient, diffuse, specular components and position of light 0 (SUN)
+    glLightfv(GL_LIGHT0,GL_AMBIENT, Ambient);
+    glLightfv(GL_LIGHT0,GL_DIFFUSE, Diffuse);
+    glLightfv(GL_LIGHT0,GL_SPECULAR,Specular);
+    glLightfv(GL_LIGHT0,GL_POSITION,Position);
+
+    // Set ambient, diffuse, specular, attenuation components and position of light 1 (FLASHLIGHT)
+    // glLightfv(GL_LIGHT1,GL_AMBIENT, Ambient);
+    glLightfv(GL_LIGHT1,GL_DIFFUSE, FlashlightDiffuse);
+    // glLightfv(GL_LIGHT1,GL_SPECULAR,Specular);
+    glLightfv(GL_LIGHT1,GL_SPOT_DIRECTION,FlashlightDirection);
+    glLightf(GL_LIGHT1,GL_SPOT_CUTOFF,FLASHLIGHT_CUTOFF);               // cutoff angle
+    glLightf(GL_LIGHT1,GL_SPOT_EXPONENT,FLASHLIGHT_EXP);                // fade around edges
+    // Set attenuation to fade out light
+    glLightf(GL_LIGHT1,GL_CONSTANT_ATTENUATION,FLASHLIGHT_CONSTANT_ATTENUATION);
+    glLightf(GL_LIGHT1,GL_LINEAR_ATTENUATION,FLASHLIGHT_LINEAR_ATTENUATION);
+    glLightf(GL_LIGHT1,GL_QUADRATIC_ATTENUATION,FLASHLIGHT_QUADRATIC_ATTENUATION);
 }
 
 void lightingPause() {

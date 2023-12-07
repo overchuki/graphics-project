@@ -25,6 +25,7 @@ In the main `final` executable, click `m` to switch to overview mode. Use arrow 
 ### Code Re-use
 `ex13`: for debug executable bullet object\
 `ex18`: for map editor to drag map around and reading/saving from/to dem file
+`https://learnopengl.com/Lighting/Light-casters`: for reference on how to write shaders for the various lights I used
 
 ### Note
 I capture the mouse in first person mode. In order to not have it captured, click `m` to enter overview mode.
@@ -41,7 +42,6 @@ I capture the mouse in first person mode. In order to not have it captured, clic
 `SPACE`: jump in first person mode\
 `SHIFT`: sprint in first person mode\
 `p`: pause/resume lighting motion\
-`l`: toggle lighting on/off\
 `k/K`: slow light cycle / speed up light cycle\
 `./>`: zoom in in perspective view\
 `,/<`: zoom out in perspective view
