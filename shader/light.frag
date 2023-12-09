@@ -16,23 +16,15 @@ void main() {
     vec3 L = normalize(SunLight);   //  L is the light vector
     vec3 R = reflect(-L,NormNormal);         //  R is the reflected light vector R = 2(L.N)N - L
     float Id = max(dot(L,NormNormal), 0.0);  //  Diffuse light is cosine of light and normal vectors
-    //  Specular is cosine of reflected and view vectors
-    // float Is = (Id>0.0) ? pow(max(dot(R,V),0.0) , gl_FrontMaterial.shininess) : 0.0;
 
-    //  Sum color types
-    // vec4 color = gl_FrontMaterial.emission
-    //             + gl_FrontLightProduct[0].ambient
-    //             + Id*gl_FrontLightProduct[0].diffuse;
-    //             // + Is*gl_FrontLightProduct[0].specular;
+    // add up color from the sun
     vec4 color = gl_FrontMaterial.emission
                 + gl_LightSource[0].ambient
                 + Id*gl_LightSource[0].diffuse;
-                // + Is*gl_FrontLightProduct[0].specular;
 
-    // float theta = dot(normalize(FlashLightVertexDirection), normalize(-FlashLightDirection));
+    // add flashlight color if the flashlight is on and within the cone
     float theta = dot(normalize(FlashLightVertexDirection), normalize(-FlashLightDirection));
     if (FlashLIghtOnFrag > 0.0 && theta > FlashLightOuterCutoff) {
-        // vec4 flashLightColor = max(dot(-FlashLightDirection,N)*2, 0.0) * gl_LightSource[1].diffuse;
         float attenuation = gl_LightSource[1].constantAttenuation + gl_LightSource[1].linearAttenuation * FlashLightDistance + gl_LightSource[1].quadraticAttenuation * (FlashLightDistance * FlashLightDistance);
         float epsilon   = gl_LightSource[1].spotCutoff - FlashLightOuterCutoff;
         float intensity = clamp((theta - FlashLightOuterCutoff) / epsilon, 0.0, 1.0); 

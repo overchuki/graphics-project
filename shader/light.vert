@@ -20,7 +20,7 @@ void main() {
     //  Sun Light position
     SunLight  = gl_LightSource[0].position.xyz;
 
-    // Flash Light Position
+    // Flash Light variables
     FlashLightDirection = gl_LightSource[1].spotDirection.xyz;
     FlashLightVertexDirection = -P.xyz;
     FlashLightDistance = distance(origin, P.xyz);

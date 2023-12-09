@@ -1,5 +1,5 @@
 /*
- *  Lighting and Textures
+ *  Object tester
  *
  *  Adapted from ex13 to be the testing ground for my objects.
  *

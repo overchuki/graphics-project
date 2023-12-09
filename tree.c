@@ -22,6 +22,7 @@ void drawTrees() {
     }
 }
 
+// draw individual tree
 void drawTree(double x, double y, double z, double rotate, double scale) {
     double trunkStep = 30;
     double trunkWidth = 0.1;

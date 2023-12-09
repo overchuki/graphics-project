@@ -6,14 +6,17 @@
  *  Key bindings:
  *  WASD/wasd   navigate if in first person view
  *  left mouse  Shoot
+ *  SPACE       jump in first person mode
+ *  SHIFT       sprint in first person mode
+ *  mouse       move camera around in first person mode (move your mouse over any part of the window to initiate this)
+ *  f/F         toggle flashlight on and off
+ * 
+ *  In debug mode:
  *  arrows      Change view angle in orthogonal and perspective overview
  *  0           Reset view angle
  *  ESC         Exit
  *  x/X         toggle axes
  *  m           cycle through view modes (orthogonal/perspective overview/perspective first person)
- *  mouse       move camera around in first person mode (move your mouse over any part of the window to initiate this)
- *  SPACE       jump in first person mode
- *  SHIFT       sprint in first person mode
  *  p           pause/resume lighting motion
  *  k/K         slow light cycle / speed up light cycle
  *  ./>         zoom in in perspective/orthogonal view

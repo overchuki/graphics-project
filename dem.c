@@ -1,5 +1,5 @@
 /*
- *   This is a c file that contains all dem read and write functions. Inspired by ex18 and modified to fit various purposes
+ *   This is a c file that contains all dem read and write functions. Inspired by function in ex18 and modified to fit various purposes
  */
 #include "CSCIx229.h"
 #include "igor.h"

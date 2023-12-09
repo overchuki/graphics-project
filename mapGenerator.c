@@ -21,7 +21,7 @@
 
 // Globals
 int th = 0;                 // Azimuth of view angle
-int ph = 45;                 // Elevation of view angle
+int ph = 45;                // Elevation of view angle
 int angleStep = 5;          // Angle step for change in angle
 int mode = 1;               // 0: orthogonal, 1: perspective overview, 2: perspective first person
 double asp = 0;             // aspect ratio of window

@@ -22,21 +22,7 @@ double lastShootTime = 0.0;
 int leftMouseDown = 0;
 double lastEnemyCheckTime = 0.0;
 
-// weapon data
-// #define weaponOffsetX 0.02
-// #define weaponOffsetY -CAMERA_HEIGHT / 5
-// #define weaponOffsetZ -0.02
-// #define weaponHeight 0.1
-// #define weaponLen 0.7
-// #define weaponWidth 0.05
-// #define barrelRadius weaponWidth / 3
-// #define barrelLen 0.3
-// #define barrelStep 30
-// #define gripWidth weaponWidth / 1.5
-// #define gripHeight weaponHeight * 2
-// #define gripLength weaponLen / 7
-// #define gripZOffset weaponLen / 1.5
-// #define gripXOffset (weaponWidth-gripWidth) / 2.0
+// vertices for bullet start and direction locations in local coordinate frame
 double bulletStart[3] = {(weaponWidth/2)*WEAPON_SCALE + weaponOffsetX, (weaponHeight/1.5)*WEAPON_SCALE + weaponOffsetY, (-barrelLen-weaponLen)*WEAPON_SCALE + weaponOffsetZ};
 double bulletDirLocal[3] = {WEAPON_FIRE_OFFSET_X,WEAPON_FIRE_OFFSET_Y,BULLET_SPEED};
 

@@ -162,6 +162,7 @@ void drawGround() {
     glNormal3d(0,1,0);
     int roadRepeatX, roadRepeatZ;
     double l,r,b,t;
+    // for each road, draw it as several quads because drawing it as one led to poor lighting performance
     for(int i = 0; i < N_ROADS; i++) {
         roadRepeatX = ceil((roads[i].right - roads[i].left) / ROAD_REPEAT_DIST);
         roadRepeatZ = ceil(((roads[i].bottom - roads[i].top) / ROAD_REPEAT_DIST));

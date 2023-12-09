@@ -72,7 +72,7 @@ final:final.o   CSCIx229.a   igor.a
 debug:debug.o   CSCIx229.a   igor.a
 	gcc $(CFLG) -o $@ $^  $(LIBS)
 
-# Map Generator
+# Link Map Generator
 mapGenerator:mapGenerator.o   CSCIx229.a   igor.a
 	gcc $(CFLG) -o $@ $^  $(LIBS)
 
