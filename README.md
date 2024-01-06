@@ -4,9 +4,9 @@
 
 I have taken the application I have developed up to hw6 and continued expanding it.
 
-This project will build 3 executables: final, mapGenerator, debug
-`final` is the main game executable, it will load you into the world where you can run around, shoot enemies and explore. Use the `-f` command line flag to go full screen and the `-d` command line flag to enable debug/dev mode to be able to use additional keys to manipulate the environment. \
-`mapGenerator` is the map generator that creates the elevation map and places objects. FYI closing the window with ESC will save any changes you make to the map to the the dem files. You can close the window with your mouse to not save changes. \
+This project will build 3 executables: `final`, `mapGenerator`, `debug`\
+`final`: the main game executable, it will load you into the world where you can run around, shoot enemies and explore. Use the `-f` command line flag to go full screen and the `-d` command line flag to enable debug/dev mode to be able to use additional keys to manipulate the environment.\
+`mapGenerator`: the map generator that creates the elevation map and places objects. FYI closing the window with ESC will save any changes you make to the map to the the dem files. You can close the window with your mouse to not save changes.\
 `debug`: object viewer to help me create individual objects and make sure their normals are correct.
 
 ### My Most Prominent Achievements
@@ -31,13 +31,13 @@ In the main `final` executable, click `m` to switch to overview mode. Use arrow 
 ### Note
 I capture the mouse in first person mode. In order to not have it captured, click `m` to enter overview mode.
 
-### Key bindings (final executable):
+### Key bindings (`final` executable):
 `WASD/wasd`: Move around in first person view\
 `left mouse click`: Shoot\
 `mouse`: move camera around in first person mode (move your mouse over any part of the window to initiate this)\
 `SPACE`: jump in first person mode\
 `SHIFT`: sprint in first person mode\
-`f/F`: toggle flashlight on and off\
+`f/F`: toggle flashlight on and off
 
 In debug mode with `-d` flag:\
 `arrows`: Change view angle in perspective overview\
@@ -50,7 +50,7 @@ In debug mode with `-d` flag:\
 `./>`: zoom in in perspective view\
 `,/<`: zoom out in perspective view
 
-### Key bindings (mapGenerator executable):
+### Key bindings (`mapGenerator` executable):
 `m`: cycle modes (map, tree, house, enemy)\
 `c`: cycle iterations of "selected" object\
 `wasd/WASD`: move brush around (in map), move object around (in tree, house, enemy)\
@@ -66,7 +66,7 @@ In debug mode with `-d` flag:\
 `r`: rotate objects\
 `Z`: randomize tree heights
 
-### Key bindings (debug executable):
+### Key bindings (`debug` executable):
 Same key bindings as ex13:\
 `l`: Toggles lighting\
 `a/A`: Decrease/increase ambient light\
