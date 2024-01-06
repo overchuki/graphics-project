@@ -10,8 +10,8 @@ This project will build 3 executables: `final`, `mapGenerator`, `debug`\
 `debug`: object viewer to help me create individual objects and make sure their normals are correct.
 
 ### My Most Prominent Achievements
-**The day night cycle.** I hope to elevate it even further with the additional lighting.\
-**The weapon mechanics**, being able to run around and shoot targets.\
+**The day night cycle.** Having a vibrant lighting environment.\
+**The weapon mechanics.** Being able to run around and shoot targets.\
 **The map generator.** It started as a basic elevation editor and became a full blown map creator where I could make any map I want fairly quickly.\
 **The scale of the scene.** I have built a fairly large world and was able to have a lot of objects such as trees around the map thanks to the optimization of display lists.\
 **The dynamic flyovers of the helicopters.** Having those flying around adds vibrancy to the scene.\
@@ -21,7 +21,7 @@ This project will build 3 executables: `final`, `mapGenerator`, `debug`\
 I was not able to create the lamps as point lights around the town. My main issue was that there was no easy way to get the vertex's location in world coordinates in the shader, everything was in view points since there is only a gl_ModelView matrix and not a gl_Model matrix. I believe I found some methods to explicitly pass the model matrix as a uniform to the vertex shader but did not have time to implement that solution while also placing additional lights around the map. I believe I still achieved my stretch goal of shaders, but did come up slightly short on my last main goal.
 
 ### How to Get Complete Overview of Scene
-In the main `final` executable, click `m` to switch to overview mode. Use arrow keys to elevate camera above ground level and `</,` to zoom out. If you zoom far enough you will exit the sky dome.
+In the main `final` executable, click `m` to switch to overview mode. Use arrow keys to elevate camera above ground level and `<`/`,` to zoom out. If you zoom far enough you will exit the sky dome.
 
 ### Code Re-use
 `ex13`: for debug executable bullet object\
